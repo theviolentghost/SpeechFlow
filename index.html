@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Speech to Text</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+    .transcript {
+      border: 1px solid #ccc;
+      padding: 10px;
+      height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #cccccc;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Live Speech to Text</h1>
+    <div class="transcript" id="transcript"></div>
+    <br>
+    <button id="start-btn">Start Recognition</button>
+    <button id="stop-btn" disabled>Stop Recognition</button>
+  </div>
+
+  <script>
+    const transcriptElement = document.getElementById('transcript');
+    const startButton = document.getElementById('start-btn');
+    const stopButton = document.getElementById('stop-btn');
+    
+    // Check if browser supports SpeechRecognition
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    
+    recognition.continuous = true; // Keeps recognition running
+    recognition.interimResults = true; // Shows interim results while speaking
+    recognition.lang = 'en-US'; // Set language to English
+    
+    recognition.onresult = (event) => {
+      let transcript = '';
+      
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+        transcript += event.results[i][0].transcript;
+      }
+      transcriptElement.textContent = transcript;
+    };
+    
+    recognition.onerror = (event) => {
+      console.error('Error occurred in recognition:', event.error);
+    };
+    
+    startButton.addEventListener('click', () => {
+      recognition.start();
+      startButton.disabled = true;
+      stopButton.disabled = false;
+    });
+    
+    stopButton.addEventListener('click', () => {
+      recognition.stop();
+      startButton.disabled = false;
+      stopButton.disabled = true;
+    });
+  </script>
+
+</body>
+</html>
